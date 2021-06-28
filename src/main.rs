@@ -1,4 +1,4 @@
-use std::io;
+use std::{io, process};
 
 use eight::{add_employees::add_employee_ti, pig_latim::str2pig_latim};
 use nine::panico;
@@ -53,6 +53,10 @@ fn main() {
         io::stdin()
             .read_line(&mut data)
             .expect("Failed to read input");
+
+        if data.trim().to_lowercase() == "done" {
+            process::exit(0);
+        }
 
         let simulated_user_specified_value : u32 = data.trim().parse().unwrap();
 
