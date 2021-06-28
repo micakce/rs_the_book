@@ -1,6 +1,6 @@
 use std::{collections::HashMap, hash::Hash, thread, time::Duration};
 
-pub fn generate_workout(intensity: u32, random_number: u32) {
+pub fn generate_workout(intensity: CValue, random_number: u32) {
     let mut struct_clouse = Cacher::new(|num| {
         println!("calculating slowly...");
         thread::sleep(Duration::from_secs(2));
@@ -29,6 +29,31 @@ T: Fn(U) -> V,
     calculation: T,
     value: HashMap<U, V>,
 }
+
+struct CStr<'a> {
+    value: &'a str
+}
+
+struct CInt {
+    value: u32
+}
+
+trait CValue: Sized {
+    fn get(&self) -> u32;
+}
+
+impl<'a> CValue for CStr<'a> {
+    fn get(&self) -> u32 {
+        self.value.len() as u32
+    }
+}
+
+impl CValue for CInt {
+    fn get(&self) -> u32 {
+        self.value
+    }
+}
+
 
 impl<T, U, V> Cacher<T, U, V>
 where
@@ -62,12 +87,12 @@ mod tests {
 
     #[test]
     fn call_with_different_values() {
-       let mut c = Cacher::new( |a| a );
+        let mut c = Cacher::new( |a| a );
 
-       let v1 = c.value(1);
-       let v2 = c.value(2);
+        let v1 = c.value(1);
+        let v2 = c.value(2);
 
-       assert_eq!(v2, 2);
+        assert_eq!(v2, 2);
     }
 
     #[test]
