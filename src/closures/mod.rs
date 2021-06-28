@@ -1,4 +1,4 @@
-use std::{collections::HashMap, thread, time::Duration};
+use std::{collections::HashMap, hash::Hash, thread, time::Duration};
 
 pub fn generate_workout(intensity: u32, random_number: u32) {
     let mut struct_clouse = Cacher::new(|num| {
@@ -22,31 +22,33 @@ pub fn generate_workout(intensity: u32, random_number: u32) {
     }
 }
 
-struct Cacher<T>
+struct Cacher<T, U, V>
 where
-T: Fn(u32) -> u32,
+T: Fn(U) -> V,
 {
     calculation: T,
-    value: HashMap<u32, u32>,
+    value: HashMap<U, V>,
 }
 
-impl<T> Cacher<T>
+impl<T, U, V> Cacher<T, U, V>
 where
-T: Fn(u32) -> u32,
+T: Fn(U) -> V,
+U: Eq + Copy + Hash,
+V: Copy,
 {
-    fn new(calculation: T) -> Cacher<T> {
+    fn new(calculation: T) -> Cacher<T, U, V> {
         Cacher {
             calculation,
             value: HashMap::new(),
         }
     }
 
-    fn value(&mut self, arg: u32) -> u32 {
+    fn value(&mut self, arg: U) -> V {
         match self.value.get(&arg) {
             Some(v) => *v,
             None => {
                 let v = (self.calculation)(arg);
-                self.value.insert(v, v);
+                self.value.insert(arg, v);
                 v
             }
         }
@@ -66,6 +68,15 @@ mod tests {
        let v2 = c.value(2);
 
        assert_eq!(v2, 2);
+    }
+
+    #[test]
+    fn call_with_string_slice() {
+        let mut c = Cacher::new(|a: &str| a.len());
+
+        let v1 = c.value("five");
+
+        assert_eq!(v1, 4);
     }
 
 }
