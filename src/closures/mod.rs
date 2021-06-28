@@ -7,22 +7,16 @@ pub fn generate_workout(intensity: u32, random_number: u32) {
         num
     });
 
-    fn long_calculation(num: u32) -> u32 {
-        println!("calculating slowly...");
-        thread::sleep(Duration::from_secs(2));
-        num
-    }
-
     if intensity < 25 {
-        println!("Today, do {} pushups!", long_calculation(intensity));
-        println!("Next, do {} situps!", long_calculation(intensity));
+        println!("Today, do {} pushups!", struct_clouse.value(intensity));
+        println!("Next, do {} situps!", struct_clouse.value(intensity));
     } else {
         if random_number == 3 {
             println!("Take a break today! Remember to stay hydrated!");
         } else {
             println!(
                 "Today, run for {} minutes!",
-                long_calculation(intensity)
+                struct_clouse.value(intensity)
                 );
         }
     }
