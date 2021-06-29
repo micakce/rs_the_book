@@ -2,6 +2,9 @@ use std::{io, process};
 
 use eight::{add_employees::add_employee_ti, pig_latim::str2pig_latim};
 use nine::panico;
+use closures::CValue;
+
+use crate::closures::{CInt, CStr};
 
 mod eight;
 mod nine;
@@ -47,6 +50,15 @@ fn main() {
 
     loop {
 
+        fn is_number(input: &str) -> bool {
+            for c in input.chars() {
+                if !c.is_numeric() {
+                    return false
+                }
+            }
+            true
+        }
+
         println!("Enter intensity:\n");
         let mut data = String::new();
 
@@ -58,8 +70,6 @@ fn main() {
             process::exit(0);
         }
 
-        let simulated_user_specified_value : u32 = data.trim().parse().unwrap();
-
         println!("Enter randomness:\n");
 
         let mut data2 = String::new();
@@ -69,7 +79,14 @@ fn main() {
             .expect("Failed to read input");
         let simulated_random_number: u32 = data2.trim().parse().unwrap();
 
-        closures::generate_workout(simulated_user_specified_value, simulated_random_number);
+        if is_number(&data[..]) {
+            let simulated_user_specified_value = CInt::new(data.trim().parse().unwrap());
+            closures::generate_workout(simulated_user_specified_value, simulated_random_number);
+        } else {
+            let simulated_user_specified_value = CStr::new(&data);
+            closures::generate_workout(simulated_user_specified_value, simulated_random_number);
+
+        }
     }
 
 }
